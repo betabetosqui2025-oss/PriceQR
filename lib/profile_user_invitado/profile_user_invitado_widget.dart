@@ -2,7 +2,7 @@ import '/components/nav_bar_invitado_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import '/index.dart';
+// import '/index.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'profile_user_invitado_model.dart';
@@ -356,7 +356,7 @@ class _ProfileUserInvitadoWidgetState extends State<ProfileUserInvitadoWidget> {
                       EdgeInsetsDirectional.fromSTEB(0.0, 104.0, 0.0, 40.0),
                   child: FFButtonWidget(
                     onPressed: () async {
-                      context.pushNamed(OpcionDeRegistroWidget.routeName);
+                  //    context.pushNamed(OpcionDeRegistroWidget.routeName);
                     },
                     text: 'Create Account',
                     options: FFButtonOptions(

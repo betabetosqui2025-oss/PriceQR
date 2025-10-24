@@ -1,3 +1,18 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // 👇 Este classpath es esencial para Firebase
+        classpath 'com.google.gms:google-services:4.4.2'
+
+        // 👇 Este ya debe estar (ajusta si tu proyecto usa otra versión)
+        classpath 'com.android.tools.build:gradle:8.0.2'
+    }
+}
+
+
 allprojects {
     repositories {
         google()
@@ -46,3 +61,4 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.layout.buildDirectory
 }
+

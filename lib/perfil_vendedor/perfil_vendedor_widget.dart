@@ -1,12 +1,7 @@
-import '/flutter_flow/flutter_flow_drop_down.dart';
-import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import '/flutter_flow/form_field_controller.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'perfil_vendedor_model.dart';
 export 'perfil_vendedor_model.dart';
@@ -14,6 +9,7 @@ export 'perfil_vendedor_model.dart';
 class PerfilVendedorWidget extends StatefulWidget {
   const PerfilVendedorWidget({super.key});
 
+  // ✅ AGREGAR ESTAS CONSTANTES PARA LA RUTA
   static String routeName = 'PerfilVendedor';
   static String routePath = '/perfilVendedor';
 
@@ -30,21 +26,11 @@ class _PerfilVendedorWidgetState extends State<PerfilVendedorWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => PerfilVendedorModel());
-
-    _model.yourNameTextController ??= TextEditingController();
-    _model.yourNameFocusNode ??= FocusNode();
-
-    _model.cityTextController ??= TextEditingController();
-    _model.cityFocusNode ??= FocusNode();
-
-    _model.myBioTextController ??= TextEditingController();
-    _model.myBioFocusNode ??= FocusNode();
   }
 
   @override
   void dispose() {
     _model.dispose();
-
     super.dispose();
   }
 
@@ -53,549 +39,334 @@ class _PerfilVendedorWidgetState extends State<PerfilVendedorWidget> {
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(100.0),
-        child: AppBar(
-          backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
-          automaticallyImplyLeading: false,
-          actions: [],
-          flexibleSpace: FlexibleSpaceBar(
-            title: Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 14.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 8.0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                              12.0, 0.0, 0.0, 0.0),
-                          child: FlutterFlowIconButton(
-                            borderColor: Colors.transparent,
-                            borderRadius: 30.0,
-                            borderWidth: 1.0,
-                            buttonSize: 50.0,
-                            icon: Icon(
-                              Icons.arrow_back_rounded,
-                              color: FlutterFlowTheme.of(context).primaryText,
-                              size: 30.0,
-                            ),
-                            onPressed: () async {
-                              context.pop();
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 0.0, 0.0),
-                    child: Text(
-                      'Create your Profile',
-                      style:
-                          FlutterFlowTheme.of(context).headlineMedium.override(
-                                font: GoogleFonts.karla(
-                                  fontWeight: FlutterFlowTheme.of(context)
-                                      .headlineMedium
-                                      .fontWeight,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .headlineMedium
-                                      .fontStyle,
-                                ),
-                                color: FlutterFlowTheme.of(context).primaryText,
-                                fontSize: 22.0,
-                                letterSpacing: 0.0,
-                                fontWeight: FlutterFlowTheme.of(context)
-                                    .headlineMedium
-                                    .fontWeight,
-                                fontStyle: FlutterFlowTheme.of(context)
-                                    .headlineMedium
-                                    .fontStyle,
-                              ),
-                    ),
-                  ),
-                ],
+      appBar: AppBar(
+        backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+        automaticallyImplyLeading: false,
+        title: Text(
+          'Perfil Vendedor',
+          style: FlutterFlowTheme.of(context).headlineMedium.override(
+                fontFamily: 'Karla',
+                color: FlutterFlowTheme.of(context).primaryText,
+                fontSize: 22.0,
+                letterSpacing: 0.0,
+              ),
+        ),
+        actions: [
+          Padding(
+            padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
+            child: InkWell(
+              onTap: () {
+                context.pushNamed('EditarPerfilVendedorWidget');
+              },
+              child: Icon(
+                Icons.edit_outlined,
+                color: FlutterFlowTheme.of(context).primaryText,
+                size: 24.0,
               ),
             ),
-            centerTitle: true,
-            expandedTitleScale: 1.0,
           ),
-          elevation: 0.0,
-        ),
+        ],
+        centerTitle: false,
+        elevation: 0.0,
       ),
       body: SafeArea(
         top: true,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 16.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 100.0,
-                    height: 100.0,
-                    decoration: BoxDecoration(
-                      color: FlutterFlowTheme.of(context).alternate,
-                      shape: BoxShape.circle,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header con información del usuario
+              Padding(
+                padding: EdgeInsetsDirectional.fromSTEB(16.0, 16.0, 16.0, 0.0),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 80.0,
+                      height: 80.0,
+                      decoration: BoxDecoration(
+                        color: FlutterFlowTheme.of(context).alternate,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: FlutterFlowTheme.of(context).primary,
+                          width: 2.0,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.person,
+                        color: FlutterFlowTheme.of(context).secondaryText,
+                        size: 40.0,
+                      ),
                     ),
-                    child: Padding(
-                      padding: EdgeInsets.all(2.0),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 0.0, 0.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Nombre del Vendedor',
+                              style: FlutterFlowTheme.of(context)
+                                  .bodyLarge
+                                  .override(
+                                    fontFamily: 'Karla',
+                                    letterSpacing: 0.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            Padding(
+                              padding:
+                                  EdgeInsetsDirectional.fromSTEB(0.0, 4.0, 0.0, 0.0),
+                              child: Text(
+                                'correo@ejemplo.com',
+                                style: FlutterFlowTheme.of(context)
+                                    .bodyMedium
+                                    .override(
+                                      fontFamily: 'Karla',
+                                      color: FlutterFlowTheme.of(context).secondaryText,
+                                      letterSpacing: 0.0,
+                                    ),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  EdgeInsetsDirectional.fromSTEB(0.0, 4.0, 0.0, 0.0),
+                              child: Text(
+                                'Ciudad, Estado',
+                                style: FlutterFlowTheme.of(context)
+                                    .bodySmall
+                                    .override(
+                                      fontFamily: 'Karla',
+                                      color: FlutterFlowTheme.of(context).secondaryText,
+                                      letterSpacing: 0.0,
+                                    ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Separador
+              Padding(
+                padding: EdgeInsetsDirectional.fromSTEB(0.0, 16.0, 0.0, 16.0),
+                child: Divider(
+                  height: 1.0,
+                  thickness: 1.0,
+                  color: FlutterFlowTheme.of(context).alternate,
+                ),
+              ),
+
+              // QR del catálogo
+              Padding(
+                padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Text(
+                        'QR de mi catálogo de productos',
+                        style: FlutterFlowTheme.of(context).bodyMedium.override(
+                              fontFamily: 'Karla',
+                              letterSpacing: 0.0,
+                            ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsetsDirectional.fromSTEB(0.0, 16.0, 0.0, 0.0),
                       child: Container(
-                        width: 90.0,
-                        height: 90.0,
-                        clipBehavior: Clip.antiAlias,
+                        width: double.infinity,
+                        height: 200.0,
                         decoration: BoxDecoration(
-                          shape: BoxShape.circle,
+                          color: FlutterFlowTheme.of(context).primaryBackground,
+                          borderRadius: BorderRadius.circular(12.0),
+                          border: Border.all(
+                            color: FlutterFlowTheme.of(context).alternate,
+                          ),
                         ),
-                        child: CachedNetworkImage(
-                          fadeInDuration: Duration(milliseconds: 500),
-                          fadeOutDuration: Duration(milliseconds: 500),
-                          imageUrl:
-                              'https://images.unsplash.com/photo-1536164261511-3a17e671d380?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=630&q=80',
-                          fit: BoxFit.fitWidth,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.qr_code_2,
+                              color: FlutterFlowTheme.of(context).secondaryText,
+                              size: 80.0,
+                            ),
+                            Padding(
+                              padding: EdgeInsetsDirectional.fromSTEB(0.0, 8.0, 0.0, 0.0),
+                              child: Text(
+                                'Código QR',
+                                style: FlutterFlowTheme.of(context)
+                                    .bodyMedium
+                                    .override(
+                                      fontFamily: 'Karla',
+                                      letterSpacing: 0.0,
+                                    ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsetsDirectional.fromSTEB(16.0, 8.0, 16.0, 0.0),
+                              child: Text(
+                                'Escanea este código para ver mi catálogo',
+                                textAlign: TextAlign.center,
+                                style: FlutterFlowTheme.of(context)
+                                    .bodySmall
+                                    .override(
+                                      fontFamily: 'Karla',
+                                      color: FlutterFlowTheme.of(context).secondaryText,
+                                      letterSpacing: 0.0,
+                                    ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(20.0, 0.0, 20.0, 16.0),
-              child: TextFormField(
-                controller: _model.yourNameTextController,
-                focusNode: _model.yourNameFocusNode,
-                textCapitalization: TextCapitalization.words,
-                obscureText: false,
-                decoration: InputDecoration(
-                  labelText: 'Your Name',
-                  labelStyle: FlutterFlowTheme.of(context).labelMedium.override(
-                        font: GoogleFonts.karla(
-                          fontWeight: FlutterFlowTheme.of(context)
-                              .labelMedium
-                              .fontWeight,
-                          fontStyle: FlutterFlowTheme.of(context)
-                              .labelMedium
-                              .fontStyle,
-                        ),
-                        letterSpacing: 0.0,
-                        fontWeight:
-                            FlutterFlowTheme.of(context).labelMedium.fontWeight,
-                        fontStyle:
-                            FlutterFlowTheme.of(context).labelMedium.fontStyle,
-                      ),
-                  hintStyle: FlutterFlowTheme.of(context).labelMedium.override(
-                        font: GoogleFonts.karla(
-                          fontWeight: FlutterFlowTheme.of(context)
-                              .labelMedium
-                              .fontWeight,
-                          fontStyle: FlutterFlowTheme.of(context)
-                              .labelMedium
-                              .fontStyle,
-                        ),
-                        letterSpacing: 0.0,
-                        fontWeight:
-                            FlutterFlowTheme.of(context).labelMedium.fontWeight,
-                        fontStyle:
-                            FlutterFlowTheme.of(context).labelMedium.fontStyle,
-                      ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: FlutterFlowTheme.of(context).alternate,
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: FlutterFlowTheme.of(context).primary,
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: FlutterFlowTheme.of(context).error,
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: FlutterFlowTheme.of(context).error,
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  filled: true,
-                  fillColor: FlutterFlowTheme.of(context).secondaryBackground,
-                  contentPadding:
-                      EdgeInsetsDirectional.fromSTEB(20.0, 24.0, 0.0, 24.0),
+                  ],
                 ),
-                style: FlutterFlowTheme.of(context).bodyMedium.override(
-                      font: GoogleFonts.karla(
-                        fontWeight:
-                            FlutterFlowTheme.of(context).bodyMedium.fontWeight,
-                        fontStyle:
-                            FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                      ),
-                      letterSpacing: 0.0,
-                      fontWeight:
-                          FlutterFlowTheme.of(context).bodyMedium.fontWeight,
-                      fontStyle:
-                          FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                    ),
-                validator:
-                    _model.yourNameTextControllerValidator.asValidator(context),
-                inputFormatters: [
-                  if (!isAndroid && !isiOS)
-                    TextInputFormatter.withFunction((oldValue, newValue) {
-                      return TextEditingValue(
-                        selection: newValue.selection,
-                        text: newValue.text
-                            .toCapitalization(TextCapitalization.words),
-                      );
-                    }),
-                ],
               ),
-            ),
-            Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(20.0, 0.0, 20.0, 16.0),
-              child: TextFormField(
-                controller: _model.cityTextController,
-                focusNode: _model.cityFocusNode,
-                textCapitalization: TextCapitalization.words,
-                obscureText: false,
-                decoration: InputDecoration(
-                  labelText: 'Your City',
-                  labelStyle: FlutterFlowTheme.of(context).labelMedium.override(
-                        font: GoogleFonts.karla(
-                          fontWeight: FlutterFlowTheme.of(context)
-                              .labelMedium
-                              .fontWeight,
-                          fontStyle: FlutterFlowTheme.of(context)
-                              .labelMedium
-                              .fontStyle,
-                        ),
-                        letterSpacing: 0.0,
-                        fontWeight:
-                            FlutterFlowTheme.of(context).labelMedium.fontWeight,
-                        fontStyle:
-                            FlutterFlowTheme.of(context).labelMedium.fontStyle,
-                      ),
-                  hintStyle: FlutterFlowTheme.of(context).labelMedium.override(
-                        font: GoogleFonts.karla(
-                          fontWeight: FlutterFlowTheme.of(context)
-                              .labelMedium
-                              .fontWeight,
-                          fontStyle: FlutterFlowTheme.of(context)
-                              .labelMedium
-                              .fontStyle,
-                        ),
-                        letterSpacing: 0.0,
-                        fontWeight:
-                            FlutterFlowTheme.of(context).labelMedium.fontWeight,
-                        fontStyle:
-                            FlutterFlowTheme.of(context).labelMedium.fontStyle,
-                      ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: FlutterFlowTheme.of(context).alternate,
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: FlutterFlowTheme.of(context).primary,
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: FlutterFlowTheme.of(context).error,
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: FlutterFlowTheme.of(context).error,
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  filled: true,
-                  fillColor: FlutterFlowTheme.of(context).secondaryBackground,
-                  contentPadding:
-                      EdgeInsetsDirectional.fromSTEB(20.0, 24.0, 0.0, 24.0),
+
+              // Separador
+              Padding(
+                padding: EdgeInsetsDirectional.fromSTEB(0.0, 16.0, 0.0, 16.0),
+                child: Divider(
+                  height: 1.0,
+                  thickness: 1.0,
+                  color: FlutterFlowTheme.of(context).alternate,
                 ),
-                style: FlutterFlowTheme.of(context).bodyMedium.override(
-                      font: GoogleFonts.karla(
-                        fontWeight:
-                            FlutterFlowTheme.of(context).bodyMedium.fontWeight,
-                        fontStyle:
-                            FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                      ),
-                      letterSpacing: 0.0,
-                      fontWeight:
-                          FlutterFlowTheme.of(context).bodyMedium.fontWeight,
-                      fontStyle:
-                          FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                    ),
-                validator:
-                    _model.cityTextControllerValidator.asValidator(context),
-                inputFormatters: [
-                  if (!isAndroid && !isiOS)
-                    TextInputFormatter.withFunction((oldValue, newValue) {
-                      return TextEditingValue(
-                        selection: newValue.selection,
-                        text: newValue.text
-                            .toCapitalization(TextCapitalization.words),
-                      );
-                    }),
-                ],
               ),
-            ),
-            Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(20.0, 0.0, 20.0, 12.0),
-              child: FlutterFlowDropDown<String>(
-                controller: _model.stateValueController ??=
-                    FormFieldController<String>(
-                  _model.stateValue ??= 'State',
-                ),
-                options: [
-                  'State',
-                  'Alabama',
-                  'Alaska',
-                  'Arizona',
-                  'Arkansas',
-                  'California',
-                  'Colorado',
-                  'Connecticut',
-                  'Delaware',
-                  'Florida',
-                  'Georgia',
-                  'Hawaii',
-                  'Idaho',
-                  'Illinoi',
-                  'Indiana',
-                  'Iowa',
-                  'Kansas',
-                  'Kentucky',
-                  'Louisiana',
-                  'Maine',
-                  'Maryland',
-                  'Massachusetts',
-                  'Michigan',
-                  'Minnesota',
-                  'Mississippi',
-                  'Missouri',
-                  'Monta',
-                  'Nebraska',
-                  'Nevada',
-                  'New Hampshire',
-                  'New Jersey',
-                  'New Mexico',
-                  'New York',
-                  'North Carolina',
-                  'North Dak',
-                  'Ohio',
-                  'Oklahoma',
-                  'Oregon',
-                  'Pennsylvani',
-                  'Rhode Island',
-                  'South Caroli',
-                  'South Dakota',
-                  'Tennessee',
-                  'Texas',
-                  'Utah',
-                  'Vermont',
-                  'Virginia',
-                  'Washingto',
-                  'West Virginia',
-                  'Wisconsin',
-                  'Wyoming'
-                ],
-                onChanged: (val) => safeSetState(() => _model.stateValue = val),
-                width: double.infinity,
-                height: 56.0,
-                textStyle: FlutterFlowTheme.of(context).bodyMedium.override(
-                      font: GoogleFonts.karla(
-                        fontWeight:
-                            FlutterFlowTheme.of(context).bodyMedium.fontWeight,
-                        fontStyle:
-                            FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                      ),
-                      letterSpacing: 0.0,
-                      fontWeight:
-                          FlutterFlowTheme.of(context).bodyMedium.fontWeight,
-                      fontStyle:
-                          FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                    ),
-                hintText: 'Tipo de oferta',
-                icon: Icon(
-                  Icons.keyboard_arrow_down_rounded,
-                  color: FlutterFlowTheme.of(context).secondaryText,
-                  size: 15.0,
-                ),
-                fillColor: FlutterFlowTheme.of(context).secondaryBackground,
-                elevation: 2.0,
-                borderColor: FlutterFlowTheme.of(context).alternate,
-                borderWidth: 2.0,
-                borderRadius: 8.0,
-                margin: EdgeInsetsDirectional.fromSTEB(20.0, 4.0, 12.0, 4.0),
-                hidesUnderline: true,
-                isSearchable: false,
-                isMultiSelect: false,
+
+              // Configuración de cuenta
+              _buildSectionTitle('Gestión de Vendedor'),
+              _buildMenuOption(
+                icon: Icons.edit_outlined,
+                title: 'Editar perfil',
+                onTap: () {
+                  context.pushNamed('EditarPerfilVendedorWidget');
+                },
               ),
-            ),
-            Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(20.0, 0.0, 20.0, 12.0),
-              child: TextFormField(
-                controller: _model.myBioTextController,
-                focusNode: _model.myBioFocusNode,
-                textCapitalization: TextCapitalization.sentences,
-                obscureText: false,
-                decoration: InputDecoration(
-                  labelStyle: FlutterFlowTheme.of(context).labelMedium.override(
-                        font: GoogleFonts.karla(
-                          fontWeight: FlutterFlowTheme.of(context)
-                              .labelMedium
-                              .fontWeight,
-                          fontStyle: FlutterFlowTheme.of(context)
-                              .labelMedium
-                              .fontStyle,
-                        ),
-                        letterSpacing: 0.0,
-                        fontWeight:
-                            FlutterFlowTheme.of(context).labelMedium.fontWeight,
-                        fontStyle:
-                            FlutterFlowTheme.of(context).labelMedium.fontStyle,
-                      ),
-                  hintText: 'Your bio',
-                  hintStyle: FlutterFlowTheme.of(context).labelMedium.override(
-                        font: GoogleFonts.karla(
-                          fontWeight: FlutterFlowTheme.of(context)
-                              .labelMedium
-                              .fontWeight,
-                          fontStyle: FlutterFlowTheme.of(context)
-                              .labelMedium
-                              .fontStyle,
-                        ),
-                        letterSpacing: 0.0,
-                        fontWeight:
-                            FlutterFlowTheme.of(context).labelMedium.fontWeight,
-                        fontStyle:
-                            FlutterFlowTheme.of(context).labelMedium.fontStyle,
-                      ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: FlutterFlowTheme.of(context).alternate,
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: FlutterFlowTheme.of(context).primary,
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: FlutterFlowTheme.of(context).error,
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: FlutterFlowTheme.of(context).error,
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  filled: true,
-                  fillColor: FlutterFlowTheme.of(context).secondaryBackground,
-                  contentPadding:
-                      EdgeInsetsDirectional.fromSTEB(20.0, 24.0, 0.0, 24.0),
-                ),
-                style: FlutterFlowTheme.of(context).bodyMedium.override(
-                      font: GoogleFonts.karla(
-                        fontWeight:
-                            FlutterFlowTheme.of(context).bodyMedium.fontWeight,
-                        fontStyle:
-                            FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                      ),
-                      letterSpacing: 0.0,
-                      fontWeight:
-                          FlutterFlowTheme.of(context).bodyMedium.fontWeight,
-                      fontStyle:
-                          FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                    ),
-                textAlign: TextAlign.start,
-                maxLines: 3,
-                validator:
-                    _model.myBioTextControllerValidator.asValidator(context),
-                inputFormatters: [
-                  if (!isAndroid && !isiOS)
-                    TextInputFormatter.withFunction((oldValue, newValue) {
-                      return TextEditingValue(
-                        selection: newValue.selection,
-                        text: newValue.text
-                            .toCapitalization(TextCapitalization.sentences),
-                      );
-                    }),
-                ],
+              _buildMenuOption(
+                icon: Icons.inventory_2_outlined,
+                title: 'Mi catálogo de productos',
+                onTap: () {
+                  // Navegar a catálogo
+                  print('Navegar a catálogo');
+                },
               ),
-            ),
-            Align(
-              alignment: AlignmentDirectional(0.0, 0.05),
-              child: Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(0.0, 24.0, 0.0, 0.0),
+              _buildMenuOption(
+                icon: Icons.add_business_outlined,
+                title: 'Añadir nuevo producto',
+                onTap: () {
+                  // Navegar a añadir producto
+                  print('Navegar a añadir producto');
+                },
+              ),
+              _buildMenuOption(
+                icon: Icons.bar_chart_outlined,
+                title: 'Estadísticas de ventas',
+                onTap: () {
+                  // Navegar a estadísticas
+                  print('Navegar a estadísticas');
+                },
+              ),
+
+              // Separador
+              Padding(
+                padding: EdgeInsetsDirectional.fromSTEB(0.0, 16.0, 0.0, 16.0),
+                child: Divider(
+                  height: 1.0,
+                  thickness: 1.0,
+                  color: FlutterFlowTheme.of(context).alternate,
+                ),
+              ),
+
+              // Configuración
+              _buildSectionTitle('Configuración'),
+              _buildMenuOption(
+                icon: Icons.notifications_outlined,
+                title: 'Notificaciones',
+                onTap: () {
+                  context.pushNamed('NotificationsWidget');
+                },
+              ),
+              _buildMenuOption(
+                icon: Icons.security_outlined,
+                title: 'Privacidad y seguridad',
+                onTap: () {
+                  // Navegar a privacidad
+                  print('Navegar a privacidad');
+                },
+              ),
+              _buildMenuOption(
+                icon: Icons.settings_outlined,
+                title: 'Configuración general',
+                onTap: () {
+                  // Navegar a configuración
+                  print('Navegar a configuración');
+                },
+              ),
+
+              // Separador
+              Padding(
+                padding: EdgeInsetsDirectional.fromSTEB(0.0, 16.0, 0.0, 16.0),
+                child: Divider(
+                  height: 1.0,
+                  thickness: 1.0,
+                  color: FlutterFlowTheme.of(context).alternate,
+                ),
+              ),
+
+              // Soporte
+              _buildSectionTitle('Soporte'),
+              _buildMenuOption(
+                icon: Icons.help_outline,
+                title: 'Centro de ayuda',
+                onTap: () {
+                  // Navegar a ayuda
+                  print('Navegar a centro de ayuda');
+                },
+              ),
+              _buildMenuOption(
+                icon: Icons.support_agent_outlined,
+                title: 'Contactar soporte',
+                subtitle: 'Soporte técnico y asistencia general',
+                onTap: () {
+                  // Contactar soporte
+                  print('Contactar soporte');
+                },
+              ),
+              _buildMenuOption(
+                icon: Icons.info_outline,
+                title: 'Acerca de la aplicación',
+                onTap: () {
+                  // Navegar a acerca de
+                  print('Navegar a acerca de');
+                },
+              ),
+
+              // Cerrar sesión
+              Padding(
+                padding: EdgeInsetsDirectional.fromSTEB(16.0, 24.0, 16.0, 32.0),
                 child: FFButtonWidget(
                   onPressed: () {
-                    print('Button pressed ...');
+                    // Lógica para cerrar sesión
+                    print('Cerrar sesión presionado');
                   },
-                  text: 'Save Changes',
+                  text: 'Cerrar sesión',
                   options: FFButtonOptions(
-                    width: 270.0,
+                    width: double.infinity,
                     height: 50.0,
                     padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                    iconPadding:
-                        EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                    color: FlutterFlowTheme.of(context).primary,
-                    textStyle:
-                        FlutterFlowTheme.of(context).titleMedium.override(
-                              font: GoogleFonts.karla(
-                                fontWeight: FlutterFlowTheme.of(context)
-                                    .titleMedium
-                                    .fontWeight,
-                                fontStyle: FlutterFlowTheme.of(context)
-                                    .titleMedium
-                                    .fontStyle,
-                              ),
-                              color: Colors.white,
-                              letterSpacing: 0.0,
-                              fontWeight: FlutterFlowTheme.of(context)
-                                  .titleMedium
-                                  .fontWeight,
-                              fontStyle: FlutterFlowTheme.of(context)
-                                  .titleMedium
-                                  .fontStyle,
-                            ),
+                    iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                    color: FlutterFlowTheme.of(context).error,
+                    textStyle: FlutterFlowTheme.of(context).titleSmall.override(
+                          fontFamily: 'Karla',
+                          color: Colors.white,
+                          letterSpacing: 0.0,
+                        ),
                     elevation: 2.0,
                     borderSide: BorderSide(
                       color: Colors.transparent,
@@ -605,8 +376,99 @@ class _PerfilVendedorWidgetState extends State<PerfilVendedorWidget> {
                   ),
                 ),
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 8.0),
+      child: Text(
+        title,
+        style: FlutterFlowTheme.of(context).bodyLarge.override(
+              fontFamily: 'Karla',
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.0,
             ),
-          ],
+      ),
+    );
+  }
+
+  Widget _buildMenuOption({
+    required IconData icon,
+    required String title,
+    String? subtitle,
+    VoidCallback? onTap,
+  }) {
+    return Padding(
+      padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: FlutterFlowTheme.of(context).secondaryBackground,
+          ),
+          child: Padding(
+            padding: EdgeInsetsDirectional.fromSTEB(0.0, 12.0, 0.0, 12.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  width: 40.0,
+                  height: 40.0,
+                  decoration: BoxDecoration(
+                    color: FlutterFlowTheme.of(context).primaryBackground,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    icon,
+                    color: FlutterFlowTheme.of(context).primaryText,
+                    size: 20.0,
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(12.0, 0.0, 12.0, 0.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                fontFamily: 'Karla',
+                                letterSpacing: 0.0,
+                              ),
+                        ),
+                        if (subtitle != null)
+                          Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(0.0, 4.0, 0.0, 0.0),
+                            child: Text(
+                              subtitle,
+                              style: FlutterFlowTheme.of(context)
+                                  .bodySmall
+                                  .override(
+                                    fontFamily: 'Karla',
+                                    color: FlutterFlowTheme.of(context).secondaryText,
+                                    letterSpacing: 0.0,
+                                  ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: FlutterFlowTheme.of(context).secondaryText,
+                  size: 24.0,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

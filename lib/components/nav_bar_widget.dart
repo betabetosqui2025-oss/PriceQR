@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'nav_bar_model.dart';
 export 'nav_bar_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NavBarWidget extends StatefulWidget {
   const NavBarWidget({super.key});
@@ -284,9 +286,30 @@ class _NavBarWidgetState extends State<NavBarWidget> {
                           focusColor: Colors.transparent,
                           hoverColor: Colors.transparent,
                           highlightColor: Colors.transparent,
-                          onTap: () async {
-                            context.pushNamed(PerfilVendedorWidget.routeName);
+                         onTap: () async {
+                            final user = FirebaseAuth.instance.currentUser;
+
+                            if (user == null) {
+                              // Si no hay sesión activa, redirige al login
+                              context.pushNamed(SignAccesoWidget.routeName);
+                              return;
+                            }
+
+                            // Obtener datos del usuario desde Firestore
+                            final userDoc = await FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(user.uid)
+                                .get();
+
+                            final rol = userDoc.data()?['rol'] ?? 'cliente'; // Valor por defecto
+
+                            if (rol == 'vendedor') {
+                              context.pushNamed(PerfilVendedorWidget.routeName);  //herror en esta parte
+                            } else {
+                              context.pushNamed(ProfileUserWidget.routeName);
+                            }
                           },
+
                           child: Column(
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.center,

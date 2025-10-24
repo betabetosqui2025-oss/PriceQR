@@ -9,6 +9,8 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'sign_acceso_model.dart';
 export 'sign_acceso_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 /// Para  el ingreso de los usuarios
 class SignAccesoWidget extends StatefulWidget {
@@ -404,8 +406,8 @@ class _SignAccesoWidgetState extends State<SignAccesoWidget> {
                                 padding: EdgeInsetsDirectional.fromSTEB(
                                     16.0, 12.0, 16.0, 0.0),
                                 child: FFButtonWidget(
-                                  onPressed: () {
-                                    print('Button pressed ...');
+                                  onPressed: () async {
+                                    print('Button pressed ...');     //mas adelante editar el maximo de caracteres 
                                   },
                                   text: 'Forgot Password?',
                                   options: FFButtonOptions(
@@ -463,9 +465,63 @@ class _SignAccesoWidgetState extends State<SignAccesoWidget> {
                       padding: EdgeInsetsDirectional.fromSTEB(
                           16.0, 12.0, 16.0, 24.0),
                       child: FFButtonWidget(
-                        onPressed: () {
-                          print('Button pressed ...');
-                        },
+                         onPressed: () async {
+      // depuración rápida
+      print('🔐 Intentando login...');
+
+      final email = _model.textController1?.text.trim() ?? '';
+      final password = _model.textController2?.text ?? '';
+
+      if (email.isEmpty || password.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Por favor ingresa correo y contraseña')),
+        );
+        return;
+      }
+
+      // Mostrar diálogo de carga (opcional)
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => Center(child: CircularProgressIndicator()),
+      );
+
+      try {
+        final userCred = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password);
+
+        print('✅ Login OK: ${userCred.user?.uid}');
+
+        // Cerrar diálogo de carga
+        if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+
+        // Navegar al Home — ajusta routeName si tu Home tiene otro identificador
+        context.pushNamed('Home');
+
+      } on FirebaseAuthException catch (e) {
+        if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+        String mensaje;
+        if (e.code == 'user-not-found') {
+          mensaje = 'No existe una cuenta con ese correo.';
+        } else if (e.code == 'wrong-password') {
+          mensaje = 'Contraseña incorrecta.';
+        } else if (e.code == 'user-disabled') {
+          mensaje = 'Cuenta deshabilitada.';
+        } else {
+          mensaje = 'Error al iniciar sesión: ${e.message}';
+        }
+        print('❌ FirebaseAuthException: ${e.code} - ${e.message}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(mensaje)),
+        );
+      } catch (e) {
+        if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+        print('💥 Error inesperado: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error inesperado al iniciar sesión')),
+        );
+      }
+    },
                         text: 'Login',
                         options: FFButtonOptions(
                           width: double.infinity,

@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'registro_cliente_model.dart';
 export 'registro_cliente_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegistroClienteWidget extends StatefulWidget {
   const RegistroClienteWidget({super.key});
@@ -625,10 +627,90 @@ class _RegistroClienteWidgetState extends State<RegistroClienteWidget> {
                                   padding: EdgeInsetsDirectional.fromSTEB(
                                       0.0, 0.0, 0.0, 16.0),
                                   child: FFButtonWidget(
-                                    onPressed: () {
-                                      print('Button pressed ...');
-                                    },
+                                     onPressed: () async {
+  print("🚀 Botón presionado");
+  FocusScope.of(context).unfocus();
+
+  final nombre = _model.fullNameTextController?.text.trim() ?? '';
+  final email = _model.emailAddressTextController?.text.trim() ?? '';
+  final password = _model.passwordTextController?.text ?? '';
+  final confirm = _model.passwordConfirmTextController?.text ?? '';
+
+  print("🧩 Datos: $nombre, $email");
+
+  if (nombre.isEmpty || email.isEmpty || password.isEmpty || confirm.isEmpty) {
+    print("⚠️ Campos vacíos");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Por favor, completa todos los campos.')),
+    );
+    return;
+  }
+
+  if (password != confirm) {
+    print("⚠️ Contraseñas distintas");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Las contraseñas no coinciden.')),
+    );
+    return;
+  }
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) => const Center(child: CircularProgressIndicator()),
+  );
+
+  try {
+    print("🔎 Verificando correo...");
+    final existing = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+    print("Métodos existentes: $existing");
+
+    if (existing.isNotEmpty) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Este correo ya está registrado.')),
+      );
+      return;
+    }
+
+    print("🛠 Creando usuario...");
+    final userCredential = await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(email: email, password: password);
+
+    print("✅ Usuario creado: ${userCredential.user?.uid}");
+
+    await FirebaseFirestore.instance.collection('usuarios').doc(userCredential.user!.uid).set({
+      'nombre': nombre,
+      'correo': email,
+      'rol': 'turista',
+      'estado_cuenta': 'activa',
+      'fecha_creacion': FieldValue.serverTimestamp(),
+    });
+
+    print("📄 Datos guardados en Firestore");
+    await userCredential.user!.sendEmailVerification();
+    print("📧 Correo de verificación enviado");
+
+    Navigator.of(context).pop();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Registro exitoso. Revisa tu correo.')),
+    );
+    context.pushNamed(SignAccesoWidget.routeName);
+  } on FirebaseAuthException catch (e) {
+    Navigator.of(context).pop();
+    print("❌ FirebaseAuthException: ${e.code} - ${e.message}");
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message ?? 'Error')));
+  } catch (e) {
+    Navigator.of(context).pop();
+    print("💥 Error inesperado: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error inesperado: $e')),
+    );
+  }
+},
+
                                     text: 'Sign up',
+                                    
                                     options: FFButtonOptions(
                                       width: 370.0,
                                       height: 44.0,

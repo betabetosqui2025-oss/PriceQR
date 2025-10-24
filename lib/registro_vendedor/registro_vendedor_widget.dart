@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'registro_vendedor_model.dart';
 export 'registro_vendedor_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegistroVendedorWidget extends StatefulWidget {
   const RegistroVendedorWidget({super.key});
@@ -493,113 +495,7 @@ class _RegistroVendedorWidgetState extends State<RegistroVendedorWidget> {
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      0.0, 0.0, 0.0, 16.0),
-                                  child: Container(
-                                    width: 370.0,
-                                    child: TextFormField(
-                                      controller: _model.fullNameTextController,
-                                      focusNode: _model.fullNameFocusNode,
-                                      autofocus: true,
-                                      autofillHints: [AutofillHints.email],
-                                      obscureText: false,
-                                      decoration: InputDecoration(
-                                        labelText:
-                                            'Enter your first and last name',
-                                        labelStyle: FlutterFlowTheme.of(context)
-                                            .labelMedium
-                                            .override(
-                                              font: GoogleFonts.karla(
-                                                fontWeight:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelMedium
-                                                        .fontWeight,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelMedium
-                                                        .fontStyle,
-                                              ),
-                                              letterSpacing: 0.0,
-                                              fontWeight:
-                                                  FlutterFlowTheme.of(context)
-                                                      .labelMedium
-                                                      .fontWeight,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .labelMedium
-                                                      .fontStyle,
-                                            ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: FlutterFlowTheme.of(context)
-                                                .primaryBackground,
-                                            width: 2.0,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(12.0),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: FlutterFlowTheme.of(context)
-                                                .primary,
-                                            width: 2.0,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(12.0),
-                                        ),
-                                        errorBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: FlutterFlowTheme.of(context)
-                                                .error,
-                                            width: 2.0,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(12.0),
-                                        ),
-                                        focusedErrorBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: FlutterFlowTheme.of(context)
-                                                .error,
-                                            width: 2.0,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(12.0),
-                                        ),
-                                        filled: true,
-                                        fillColor: FlutterFlowTheme.of(context)
-                                            .primaryBackground,
-                                      ),
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .override(
-                                            font: GoogleFonts.karla(
-                                              fontWeight:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyMedium
-                                                      .fontWeight,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyMedium
-                                                      .fontStyle,
-                                            ),
-                                            letterSpacing: 0.0,
-                                            fontWeight:
-                                                FlutterFlowTheme.of(context)
-                                                    .bodyMedium
-                                                    .fontWeight,
-                                            fontStyle:
-                                                FlutterFlowTheme.of(context)
-                                                    .bodyMedium
-                                                    .fontStyle,
-                                          ),
-                                      keyboardType: TextInputType.emailAddress,
-                                      validator: _model
-                                          .fullNameTextControllerValidator
-                                          .asValidator(context),
-                                    ),
-                                  ),
-                                ),
+              
                                 Padding(
                                   padding: EdgeInsetsDirectional.fromSTEB(
                                       0.0, 0.0, 0.0, 16.0),
@@ -959,9 +855,84 @@ class _RegistroVendedorWidgetState extends State<RegistroVendedorWidget> {
                                   padding: EdgeInsetsDirectional.fromSTEB(
                                       0.0, 0.0, 0.0, 16.0),
                                   child: FFButtonWidget(
-                                    onPressed: () {
-                                      print('Button pressed ...');
-                                    },
+                                   onPressed: () async {
+  print("🚀 Botón de registro de vendedor presionado");
+  FocusScope.of(context).unfocus();
+
+  final nombre = _model.nombreCompletoTextController?.text.trim() ?? '';
+  final negocio = _model.nombreDelNegocioTextController?.text.trim() ?? '';
+  final telefono = _model.telefonoTextController?.text.trim() ?? '';
+  final email = _model.emailAddressTextController?.text.trim() ?? '';
+  final password = _model.passwordTextController?.text ?? '';
+  final confirm = _model.passwordConfirmTextController?.text ?? '';
+
+  if (nombre.isEmpty || negocio.isEmpty || telefono.isEmpty || email.isEmpty || password.isEmpty || confirm.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Por favor, completa todos los campos.')),
+    );
+    return;
+  }
+
+  if (password != confirm) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Las contraseñas no coinciden.')),
+    );
+    return;
+  }
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) => const Center(child: CircularProgressIndicator()),
+  );
+
+  try {
+    final existing = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+    if (existing.isNotEmpty) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Este correo ya está registrado.')),
+      );
+      return;
+    }
+
+    final userCredential = await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(email: email, password: password);
+
+    await FirebaseFirestore.instance
+        .collection('vendedores')
+        .doc(userCredential.user!.uid)
+        .set({
+      'nombre': nombre,
+      'nombre_negocio': negocio,
+      'telefono': telefono,
+      'correo': email,
+      'rol': 'vendedor',
+      'estado_cuenta': 'activa',
+      'fecha_creacion': FieldValue.serverTimestamp(),
+    });
+
+    await userCredential.user!.sendEmailVerification();
+
+    Navigator.of(context).pop();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Registro exitoso. Revisa tu correo para verificar la cuenta.')),
+    );
+
+    context.pushNamed(SignAccesoWidget.routeName);
+  } on FirebaseAuthException catch (e) {
+    Navigator.of(context).pop();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(e.message ?? 'Error de autenticación')),
+    );
+  } catch (e) {
+    Navigator.of(context).pop();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error inesperado: $e')),
+    );
+  }
+},
+
                                     text: 'Sign up',
                                     options: FFButtonOptions(
                                       width: 370.0,

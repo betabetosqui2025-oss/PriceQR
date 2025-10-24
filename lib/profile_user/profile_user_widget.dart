@@ -5,8 +5,11 @@ import '/flutter_flow/flutter_flow_widgets.dart';
 import '/index.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'profile_user_model.dart';
 export 'profile_user_model.dart';
+
 
 class ProfileUserWidget extends StatefulWidget {
   const ProfileUserWidget({super.key});
@@ -89,54 +92,57 @@ class _ProfileUserWidgetState extends State<ProfileUserWidget> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                '[Username]',
-                                style: FlutterFlowTheme.of(context)
-                                    .headlineSmall
-                                    .override(
-                                      font: GoogleFonts.karla(
-                                        fontWeight: FlutterFlowTheme.of(context)
-                                            .headlineSmall
-                                            .fontWeight,
-                                        fontStyle: FlutterFlowTheme.of(context)
-                                            .headlineSmall
-                                            .fontStyle,
-                                      ),
-                                      color: FlutterFlowTheme.of(context).info,
-                                      letterSpacing: 0.0,
-                                      fontWeight: FlutterFlowTheme.of(context)
-                                          .headlineSmall
-                                          .fontWeight,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .headlineSmall
-                                          .fontStyle,
-                                    ),
-                              ),
-                              Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
-                                    0.0, 4.0, 0.0, 0.0),
-                                child: Text(
-                                  '[Email_Address]',
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .override(
-                                        font: GoogleFonts.plusJakartaSans(
-                                          fontWeight: FontWeight.normal,
-                                          fontStyle:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyMedium
-                                                  .fontStyle,
-                                        ),
-                                        color: Color(0xB4FFFFFF),
-                                        fontSize: 14.0,
-                                        letterSpacing: 0.0,
-                                        fontWeight: FontWeight.normal,
-                                        fontStyle: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .fontStyle,
-                                      ),
-                                ),
-                              ),
+                             FutureBuilder<DocumentSnapshot>(
+  future: FirebaseFirestore.instance
+      .collection('usuarios')
+      .doc(FirebaseAuth.instance.currentUser?.uid)
+      .get(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const CircularProgressIndicator(color: Colors.white);
+    }
+    if (!snapshot.hasData || !snapshot.data!.exists) {
+      return const Text(
+        'Usuario no encontrado',
+        style: TextStyle(color: Colors.white),
+      );
+    }
+
+    final userData = snapshot.data!.data() as Map<String, dynamic>;
+    final nombre = userData['nombre'] ?? 'Usuario';
+    final correo = userData['correo'] ??
+        FirebaseAuth.instance.currentUser?.email ??
+        '';
+
+   return Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: [
+    Text(
+      nombre,
+      style: FlutterFlowTheme.of(context)
+          .headlineSmall
+          .override(
+            font: GoogleFonts.karla(),
+            color: const Color(0xFFFFC107), // 💛 Amarillo dorado para el nombre
+            fontWeight: FontWeight.bold,
+          ),
+    ),
+    Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
+      child: Text(
+        correo,
+        style: FlutterFlowTheme.of(context).bodyMedium.override(
+              font: GoogleFonts.plusJakartaSans(),
+              color: const Color(0xFFB0BEC5), // 💙 Gris azulado para el correo
+            ),
+      ),
+    ),
+  ],
+);
+  },
+),
+
                             ],
                           ),
                         ),

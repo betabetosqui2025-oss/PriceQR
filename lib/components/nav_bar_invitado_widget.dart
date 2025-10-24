@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'nav_bar_invitado_model.dart';
 export 'nav_bar_invitado_model.dart';
-import 'package:price_q_r/opcion_de_registro/opcion_de_registro_widget.dart';
 
 class NavBarInvitadoWidget extends StatefulWidget {
   const NavBarInvitadoWidget({super.key});
