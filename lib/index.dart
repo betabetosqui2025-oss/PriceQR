@@ -21,3 +21,5 @@ export '/home_invitado/home_invitado_widget.dart' show HomeInvitadoWidget;
 export '/editar_perfil_vendedor/editar_perfil_vendedor_widget.dart'
     show EditarPerfilVendedorWidget;
 export '/sign_acceso/sign_acceso_widget.dart' show SignAccesoWidget;
+export '/anadir_producto/anadir_producto_widget.dart' show AnadirProductoWidget; // ✅ CORREGIDO
+// Target of URI doesn't exist: /añador_producto/index.dart Try creating the file referemced by the

@@ -286,7 +286,7 @@ class _NavBarWidgetState extends State<NavBarWidget> {
                           focusColor: Colors.transparent,
                           hoverColor: Colors.transparent,
                           highlightColor: Colors.transparent,
-                         onTap: () async {
+                         onTap: () async {                                                        // Esta parte no la toco entonces 
                             final user = FirebaseAuth.instance.currentUser;
 
                             if (user == null) {
@@ -304,11 +304,11 @@ class _NavBarWidgetState extends State<NavBarWidget> {
                             final rol = userDoc.data()?['rol'] ?? 'cliente'; // Valor por defecto
 
                             if (rol == 'vendedor') {
-                              context.pushNamed(PerfilVendedorWidget.routeName);  //herror en esta parte
+                              context.pushNamed(PerfilVendedorWidget.routeName);  
                             } else {
                               context.pushNamed(ProfileUserWidget.routeName);
                             }
-                          },
+                          },                                                                             //
 
                           child: Column(
                             mainAxisSize: MainAxisSize.max,

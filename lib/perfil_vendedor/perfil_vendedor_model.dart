@@ -2,6 +2,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/form_field_controller.dart';
 import 'perfil_vendedor_widget.dart' show PerfilVendedorWidget;
 import 'package:flutter/material.dart';
+import '/index.dart';
 
 class PerfilVendedorModel extends FlutterFlowModel<PerfilVendedorWidget> {
   ///  State fields for stateful widgets in this page.

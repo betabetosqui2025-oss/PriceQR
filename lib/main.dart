@@ -1,42 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart'; // Este archivo se genera con `flutterfire configure`
+import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'flutter_flow/flutter_flow_util.dart';
+import 'flutter_flow/nav/nav.dart'; // ✅ IMPORT CRÍTICO QUE FALTABA
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // 🔥 Inicializamos Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 
-  
-// 🔍 Leer colección de prueba
- try {
-  // Leer todos los documentos de la colección 'productos'
-  final snapshot = await FirebaseFirestore.instance.collection('productos').get();
-
-  for (var doc in snapshot.docs) {
-    final data = doc.data();
-    print('✅ Producto: ${data['nombre']} - Precio: ${data['precio']}');
+  // ✅ INICIALIZACIÓN ROBUSTA PARA ANDROID
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print("✅ Firebase inicializado correctamente");
+  } catch (e) {
+    print("❌ Error inicializando Firebase: $e");
+    // En caso de error, igual procedemos para evitar bloqueo
   }
 
-  // Escribir documento de prueba
-  await FirebaseFirestore.instance.collection('test').add({
-    'mensaje': 'Firebase conectado correctamente!',
-    'timestamp': FieldValue.serverTimestamp(),
-  });
-
-  print("✅ Conexión exitosa con Firebase Firestore");
-} catch (e) {
-  print("❌ Error conectando con Firebase: $e");
-}
-
+  // Configuración del manejo de rutas web
   GoRouter.optionURLReflectsImperativeAPIs = true;
   usePathUrlStrategy();
 
@@ -49,13 +35,80 @@ class MyApp extends StatefulWidget {
 
   static _MyAppState of(BuildContext context) =>
       context.findAncestorStateOfType<_MyAppState>()!;
+
+  static String getRoute(BuildContext context) => of(context).getRoute();
+
+  static List<String> getRouteStack(BuildContext context) =>
+      of(context).getRouteStack();
 }
 
 class _MyAppState extends State<MyApp> {
   ThemeMode _themeMode = ThemeMode.system;
   late AppStateNotifier _appStateNotifier;
   late GoRouter _router;
+  bool _initialized = false;
+  String? _initError; // ✅ VARIABLE FALTANTE
 
+  @override
+  void initState() {
+    super.initState();
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    try {
+      _appStateNotifier = AppStateNotifier.instance;
+      _router = createRouter(_appStateNotifier);
+
+      // ✅ INICIALIZACIÓN MÁS SIMPLE
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      print("✅ Firebase inicializado");
+
+      // ✅ DETENER SPLASH DESPUÉS DE 2 SEGUNDOS (TIEMPO FIJO)
+      Future.delayed(Duration(seconds: 2), () {
+        if (mounted) {
+          _appStateNotifier.stopShowingSplashImage();
+          print("🔄 Splash detenido, navegando a login...");
+        }
+      });
+
+      if (mounted) {
+        safeSetState(() {
+          _initialized = true;
+        });
+      }
+
+    } catch (e) {
+      print("❌ Error en inicialización: $e");
+      if (mounted) {
+        safeSetState(() {
+          _initialized = true;
+          _initError = e.toString(); // ✅ ASIGNAR EL ERROR
+          _appStateNotifier.stopShowingSplashImage();
+        });
+      }
+    }
+  }
+
+  Future<void> _checkFirestoreConnection() async {
+    try {
+      // ✅ CHECK MÁS SIMPLE Y SEGURO
+      await FirebaseFirestore.instance
+          .collection('productos')
+          .limit(1)
+          .get()
+          .timeout(Duration(seconds: 10));
+      
+      print("✅ Conexión Firestore exitosa");
+    } catch (e) {
+      print("⚠️ Check Firestore opcional falló: $e");
+      // No bloqueamos la app por este error
+    }
+  }
+
+  // 🔧 Métodos de navegación
   String getRoute([RouteMatch? routeMatch]) {
     final RouteMatch lastMatch =
         routeMatch ?? _router.routerDelegate.currentConfiguration.last;
@@ -65,28 +118,57 @@ class _MyAppState extends State<MyApp> {
     return matchList.uri.toString();
   }
 
-  List<String> getRouteStack() =>
-      _router.routerDelegate.currentConfiguration.matches
-          .map((e) => getRoute(e))
-          .toList();
-
-  @override
-  void initState() {
-    super.initState();
-    _appStateNotifier = AppStateNotifier.instance;
-    _router = createRouter(_appStateNotifier);
-
-    Future.delayed(
-      const Duration(milliseconds: 4000),
-      () => safeSetState(() => _appStateNotifier.stopShowingSplashImage()),
-    );
+  List<String> getRouteStack() {
+    return _router.routerDelegate.currentConfiguration.matches
+        .whereType<RouteMatch>()
+        .map((e) => getRoute(e))
+        .toList();
   }
 
-  void setThemeMode(ThemeMode mode) =>
-      safeSetState(() => _themeMode = mode);
+  void setThemeMode(ThemeMode mode) => safeSetState(() => _themeMode = mode);
 
   @override
   Widget build(BuildContext context) {
+    // ✅ MANEJO DE ESTADOS DE INICIALIZACIÓN
+    if (!_initialized) {
+      return MaterialApp(
+        home: Scaffold(
+          backgroundColor: Colors.white,
+          body: Center(
+            child: Image.asset(
+              'assets/images/Splash_Screen.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (_initError != null) {
+      // Pantalla de error segura
+      return MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 64, color: Colors.red),
+                SizedBox(height: 20),
+                Text('Error de inicialización'),
+                SizedBox(height: 10),
+                Text(_initError!, textAlign: TextAlign.center),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => _initializeApp(),
+                  child: Text('Reintentar'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'PriceQR',
@@ -102,6 +184,15 @@ class _MyAppState extends State<MyApp> {
       ),
       themeMode: _themeMode,
       routerConfig: _router,
+      // ✅ CONFIGURACIÓN ESPECÍFICA PARA ANDROID
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(1.0), // Evita escalado de texto en Android
+          ),
+          child: child!,
+        );
+      },
     );
   }
 }

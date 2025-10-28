@@ -1,9 +1,13 @@
 import '/flutter_flow/flutter_flow_theme.dart';
+import '/index.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'package:flutter/material.dart';
 import 'perfil_vendedor_model.dart';
 export 'perfil_vendedor_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+// import '/components/nav_bar_widget.dart';
 
 class PerfilVendedorWidget extends StatefulWidget {
   const PerfilVendedorWidget({super.key});
@@ -19,13 +23,53 @@ class PerfilVendedorWidget extends StatefulWidget {
 class _PerfilVendedorWidgetState extends State<PerfilVendedorWidget> {
   late PerfilVendedorModel _model;
 
+  String nombre = '';
+  String correo = '';
+  /* String ciudad = ''; */
+  bool cargando = true;
+
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
-  @override
-  void initState() {
-    super.initState();
-    _model = createModel(context, () => PerfilVendedorModel());
+ @override
+void initState() {
+  super.initState();
+  _model = createModel(context, () => PerfilVendedorModel());
+  _cargarDatosVendedor();
+}
+
+Future<void> _cargarDatosVendedor() async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) {
+    setState(() => cargando = false);
+    return;
   }
+
+  try {
+    final doc = await FirebaseFirestore.instance
+        .collection('vendedores')
+        .doc(user.uid)
+        .get();
+
+    if (doc.exists && doc.data() != null) {
+      final data = doc.data()!;
+      setState(() {
+        nombre = data['nombre'] ?? 'Vendedor';
+        correo = data['correo'] ?? user.email ?? 'Correo no disponible';
+      });
+    } else {
+      // Si no existe el documento
+      setState(() {
+        nombre = 'Vendedor no encontrado';
+        correo = user.email ?? 'Correo no disponible';
+      });
+    }
+  } catch (e) {
+    print('❌ Error al cargar datos del vendedor: $e');
+  } finally {
+    setState(() => cargando = false);
+  }
+}
+
 
   @override
   void dispose() {
@@ -76,78 +120,66 @@ class _PerfilVendedorWidgetState extends State<PerfilVendedorWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header con información del usuario
-              Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(16.0, 16.0, 16.0, 0.0),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 80.0,
-                      height: 80.0,
-                      decoration: BoxDecoration(
-                        color: FlutterFlowTheme.of(context).alternate,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: FlutterFlowTheme.of(context).primary,
-                          width: 2.0,
-                        ),
+              
+             
+Padding(
+  padding: EdgeInsetsDirectional.fromSTEB(16.0, 16.0, 16.0, 0.0),
+  child: Row(
+    children: [
+      Container(
+        width: 80.0,
+        height: 80.0,
+        decoration: BoxDecoration(
+          color: FlutterFlowTheme.of(context).alternate,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: FlutterFlowTheme.of(context).primary,
+            width: 2.0,
+          ),
+        ),
+        child: Icon(
+          Icons.person,
+          color: FlutterFlowTheme.of(context).secondaryText,
+          size: 40.0,
+        ),
+      ),
+      Expanded(
+        child: Padding(
+          padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 0.0, 0.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (cargando)
+                const Center(child: CircularProgressIndicator())
+              else ...[
+                Text(
+                  nombre.isNotEmpty ? nombre : 'Nombre no disponible',
+                  style: FlutterFlowTheme.of(context).bodyLarge.override(
+                        fontFamily: 'Karla',
+                        letterSpacing: 0.0,
+                        fontWeight: FontWeight.bold,
                       ),
-                      child: Icon(
-                        Icons.person,
-                        color: FlutterFlowTheme.of(context).secondaryText,
-                        size: 40.0,
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 0.0, 0.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Nombre del Vendedor',
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyLarge
-                                  .override(
-                                    fontFamily: 'Karla',
-                                    letterSpacing: 0.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                            Padding(
-                              padding:
-                                  EdgeInsetsDirectional.fromSTEB(0.0, 4.0, 0.0, 0.0),
-                              child: Text(
-                                'correo@ejemplo.com',
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .override(
-                                      fontFamily: 'Karla',
-                                      color: FlutterFlowTheme.of(context).secondaryText,
-                                      letterSpacing: 0.0,
-                                    ),
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  EdgeInsetsDirectional.fromSTEB(0.0, 4.0, 0.0, 0.0),
-                              child: Text(
-                                'Ciudad, Estado',
-                                style: FlutterFlowTheme.of(context)
-                                    .bodySmall
-                                    .override(
-                                      fontFamily: 'Karla',
-                                      color: FlutterFlowTheme.of(context).secondaryText,
-                                      letterSpacing: 0.0,
-                                    ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
-              ),
+                Padding(
+                  padding:
+                      const EdgeInsetsDirectional.fromSTEB(0.0, 4.0, 0.0, 0.0),
+                  child: Text(
+                    correo.isNotEmpty ? correo : 'Correo no disponible',
+                    style: FlutterFlowTheme.of(context).bodyMedium.override(
+                          fontFamily: 'Karla',
+                          color: FlutterFlowTheme.of(context).secondaryText,
+                          letterSpacing: 0.0,
+                        ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    ],
+  ),
+),
 
               // Separador
               Padding(
@@ -255,14 +287,14 @@ class _PerfilVendedorWidgetState extends State<PerfilVendedorWidget> {
                   print('Navegar a catálogo');
                 },
               ),
-              _buildMenuOption(
+                          _buildMenuOption(
                 icon: Icons.add_business_outlined,
                 title: 'Añadir nuevo producto',
                 onTap: () {
-                  // Navegar a añadir producto
-                  print('Navegar a añadir producto');
+                  context.pushNamed('AnadirProducto');
                 },
               ),
+              
               _buildMenuOption(
                 icon: Icons.bar_chart_outlined,
                 title: 'Estadísticas de ventas',
@@ -350,10 +382,13 @@ class _PerfilVendedorWidgetState extends State<PerfilVendedorWidget> {
               Padding(
                 padding: EdgeInsetsDirectional.fromSTEB(16.0, 24.0, 16.0, 32.0),
                 child: FFButtonWidget(
-                  onPressed: () {
-                    // Lógica para cerrar sesión
-                    print('Cerrar sesión presionado');
-                  },
+                  onPressed: () async {
+                      await FirebaseAuth.instance.signOut();
+                      if (context.mounted) {
+                        context.pushNamed(SignAccesoWidget.routeName);
+                      }
+                    },
+
                   text: 'Cerrar sesión',
                   options: FFButtonOptions(
                     width: double.infinity,

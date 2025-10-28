@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '/flutter_flow/flutter_flow_util.dart';
-
 import '/index.dart';
 
 export 'package:go_router/go_router.dart';
@@ -21,10 +20,24 @@ class AppStateNotifier extends ChangeNotifier {
   static AppStateNotifier get instance => _instance ??= AppStateNotifier._();
 
   bool showSplashImage = true;
+  bool _loggedIn = false;
+  String? _userType;
+
+  bool get loggedIn => _loggedIn;
+  String? get userType => _userType;
+
+  // ✅ MÉTODOS PARA MANEJAR ESTADO DE AUTH
+  void setLoggedIn(bool loggedIn, {String? userType}) {
+    _loggedIn = loggedIn;
+    _userType = userType;
+    notifyListeners();
+  }
 
   void stopShowingSplashImage() {
-    showSplashImage = false;
-    notifyListeners();
+    if (showSplashImage) {
+      showSplashImage = false;
+      notifyListeners();
+    }
   }
 }
 
@@ -33,17 +46,26 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
       debugLogDiagnostics: true,
       refreshListenable: appStateNotifier,
       navigatorKey: appNavigatorKey,
-      errorBuilder: (context, state) => appStateNotifier.showSplashImage
-          ? Builder(
-              builder: (context) => Container(
-                color: Colors.transparent,
-                child: Image.asset(
-                  'assets/images/Splash_Screen.png',
-                  fit: BoxFit.cover,
-                ),
-              ),
-            )
-          : LoginWidget(),
+      
+      // ✅ REDIRECT LOGIC SIMPLIFICADA - ELIMINAR LOOPS
+      redirect: (context, state) {
+        final currentPath = state.uri.toString();
+        print("🔄 Redirect: currentPath=$currentPath, showSplash=${appStateNotifier.showSplashImage}");
+        
+        // Solo manejar el caso del splash
+        if (currentPath == '/' && !appStateNotifier.showSplashImage) {
+          return '/login'; // Ir directamente al login después del splash
+        }
+        
+        // Para todas las demás rutas, no redirigir
+        return null;
+      },
+      
+      errorBuilder: (context, state) {
+        // ✅ ERROR BUILDER MEJORADO
+        return LoginWidget();
+      },
+      
       routes: [
         FFRoute(
           name: '_initialize',
@@ -51,7 +73,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, _) => appStateNotifier.showSplashImage
               ? Builder(
                   builder: (context) => Container(
-                    color: Colors.transparent,
+                    color: Colors.white,
                     child: Image.asset(
                       'assets/images/Splash_Screen.png',
                       fit: BoxFit.cover,
@@ -129,6 +151,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           name: EditarPerfilVendedorWidget.routeName,
           path: EditarPerfilVendedorWidget.routePath,
           builder: (context, params) => EditarPerfilVendedorWidget(),
+        ),
+        FFRoute(
+          name: AnadirProductoWidget.routeName,
+          path: AnadirProductoWidget.routePath,
+          builder: (context, params) => AnadirProductoWidget(),
         ),
         FFRoute(
           name: SignAccesoWidget.routeName,

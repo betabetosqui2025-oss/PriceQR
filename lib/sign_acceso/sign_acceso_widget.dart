@@ -10,6 +10,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'sign_acceso_model.dart';
 export 'sign_acceso_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '/index.dart';
 
 
 /// Para  el ingreso de los usuarios
@@ -465,63 +467,85 @@ class _SignAccesoWidgetState extends State<SignAccesoWidget> {
                       padding: EdgeInsetsDirectional.fromSTEB(
                           16.0, 12.0, 16.0, 24.0),
                       child: FFButtonWidget(
-                         onPressed: () async {
-      // depuración rápida
-      print('🔐 Intentando login...');
 
-      final email = _model.textController1?.text.trim() ?? '';
-      final password = _model.textController2?.text ?? '';
+               onPressed: () async {
+  print('🔐 Intentando login...');
 
-      if (email.isEmpty || password.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Por favor ingresa correo y contraseña')),
-        );
-        return;
-      }
+  final email = _model.textController1?.text.trim() ?? '';
+  final password = _model.textController2?.text ?? '';
 
-      // Mostrar diálogo de carga (opcional)
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => Center(child: CircularProgressIndicator()),
+  if (email.isEmpty || password.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Por favor ingresa correo y contraseña')),
+    );
+    return;
+  }
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) => Center(child: CircularProgressIndicator()),
+  );
+
+  try {
+    final userCred = await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email, password: password);
+
+    print('✅ Login OK: ${userCred.user?.uid}');
+
+    if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+
+    // 👇 Aquí va el nuevo bloque
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      context.pushNamed(SignAccesoWidget.routeName);
+      return;
+    }
+
+    final firestore = FirebaseFirestore.instance;
+    DocumentSnapshot? userDoc = await firestore.collection('usuarios').doc(user.uid).get();
+    if (!userDoc.exists) {
+      userDoc = await firestore.collection('vendedores').doc(user.uid).get();
+    }
+
+    if (!userDoc.exists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se encontró información del usuario.')),
       );
+      await FirebaseAuth.instance.signOut();
+      context.pushNamed(SignAccesoWidget.routeName);
+      return;
+    }
 
-      try {
-        final userCred = await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: email, password: password);
+    final rol = (userDoc.data() as Map<String, dynamic>)['rol'] ?? 'cliente';
+    if (rol == 'vendedor') {
+      context.pushNamed(PerfilVendedorWidget.routeName);
+    } else {
+      context.pushNamed(ProfileUserWidget.routeName);
+    }
 
-        print('✅ Login OK: ${userCred.user?.uid}');
+  } on FirebaseAuthException catch (e) {
+    if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+    String mensaje;
+    if (e.code == 'user-not-found') {
+      mensaje = 'No existe una cuenta con ese correo.';
+    } else if (e.code == 'wrong-password') {
+      mensaje = 'Contraseña incorrecta.';
+    } else if (e.code == 'user-disabled') {
+      mensaje = 'Cuenta deshabilitada.';
+    } else {
+      mensaje = 'Error al iniciar sesión: ${e.message}';
+    }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensaje)));
+  } catch (e) {
+    if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+    print('💥 Error inesperado: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error inesperado al iniciar sesión')),
+    );
+  }
+},
 
-        // Cerrar diálogo de carga
-        if (Navigator.of(context).canPop()) Navigator.of(context).pop();
-
-        // Navegar al Home — ajusta routeName si tu Home tiene otro identificador
-        context.pushNamed('Home');
-
-      } on FirebaseAuthException catch (e) {
-        if (Navigator.of(context).canPop()) Navigator.of(context).pop();
-        String mensaje;
-        if (e.code == 'user-not-found') {
-          mensaje = 'No existe una cuenta con ese correo.';
-        } else if (e.code == 'wrong-password') {
-          mensaje = 'Contraseña incorrecta.';
-        } else if (e.code == 'user-disabled') {
-          mensaje = 'Cuenta deshabilitada.';
-        } else {
-          mensaje = 'Error al iniciar sesión: ${e.message}';
-        }
-        print('❌ FirebaseAuthException: ${e.code} - ${e.message}');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(mensaje)),
-        );
-      } catch (e) {
-        if (Navigator.of(context).canPop()) Navigator.of(context).pop();
-        print('💥 Error inesperado: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error inesperado al iniciar sesión')),
-        );
-      }
-    },
                         text: 'Login',
                         options: FFButtonOptions(
                           width: double.infinity,
